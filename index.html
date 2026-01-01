@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>XƯỞNG XI MĂNG</title>
+
+<style>
+body{margin:0;font-family:"Times New Roman"}
+.hidden{display:none}
+
+/* MENU */
+.menu{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:30px;
+  background:rgba(0,0,0,0.8);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:flex-star;
+  gap:25px;
+  z-index:1000;
+}
+.menu a{
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
+}
+
+/* TRANG CHỦ */
+#home{
+ position:relative;
+ margin-top:30px;              /* trừ chiều cao menu */
+ height:calc(100vh - 30px);    /* phần còn lại của màn hình */
+ background:url("anhcty1.png") center/cover no-repeat;
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+ overflow:hidden;
+ align-items:center;
+ justify-content:center;
+color:blue;text-align:center
+}
+#home h1{padding-top:120px;font-size:50px}
+.subtitle {
+    font-size: 30px;   /* tăng cỡ chữ */
+    font-weight: 500;  /* tùy chọn */
+}
+/* CHUNG */
+button{padding:4px 10px;font-weight:bold}
+.info{text-align:center;font-weight:bold;margin:2px}
+h2,h3,p{margin:2px}
+
+/* BẢNG */
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #000;font-size:12px;text-align:center;padding:3px}
+th{background:#eee}
+input{width:28px;border:none;text-align:center}
+.total{font-weight:bold;background:#f3f3f3}
+.print-val{display:none}
+
+/* HEADER IN */
+#print-header{text-align:center;
+}
+ 
+/* CHỮ KÝ */
+#print-sign {
+  margin-top: 10px;
+  text-align: right;
+  font-size: 12px;
+  font-weight:bold
+  page-break-inside: avoid;
+}
+
+/* IN */
+@media print{
+@page{size:A4 landscape;margin:8mm}
+.menu,button,input,select,.info{display:none!important}
+#home,#dataPage{display:none}
+#noibo{display:block}
+
+/* HEADER */
+.print-header{display:block}
+.print-header h2{font-size:18px}
+.print-header h3{font-size:14px}
+
+/* IN GIÁ TRỊ */
+input{display:none}
+.print-val{display:inline}
+
+/* KHÔNG NGẮT TRANG */
+table,tr,td,th{page-break-inside:avoid}
+}
+
+#gioithieu{
+  position:relative;
+  margin-top:30px;
+  min-height:calc(100vh - 30px);   /* TRỪ MENU */
+  width:100%;
+  box-sizing:border-box;
+
+  background:url("https://images.unsplash.com/photo-1581092334494-9dba1e6e3f48") center center / cover no-repeat;
+
+  padding:20px;
+  overflow:hidden;
+}
+
+
+#dataPage{
+  position:relative;
+  margin-top:30px;
+  min-height:calc(100vh - 30px);   /* TRỪ MENU */
+  width:100%;
+  box-sizing:border-box;
+
+  background:url("https://images.unsplash.com/photo-1581092334494-9dba1e6e3f48") center center / cover no-repeat;
+
+  padding:20px;
+  overflow:hidden;
+}
+
+/* ===== GIỚI THIỆU – SƠ ĐỒ ===== */
+.org-chart{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:15px;
+margin:20px 0
+}
+.org-chart .row{
+display:flex;
+gap:20px
+}
+.box{
+border:1px solid #000;
+padding:8px 12px;
+text-align:center;
+min-width:120px;
+background:#f9f9f9;
+font-weight:bold
+}
+.top{background:#e0e0e0}
+
+/* LINK TRÁI DƯỚI */
+.gt-links{
+margin-top:20px;
+font-weight:bold
+}
+.gt-links div{
+margin:6px 0;
+cursor:pointer
+}
+.page{
+  margin-top:30px;
+  min-height:calc(100vh - 30px);
+}
+.hidden{
+  display:none;
+}
+.title-org{
+  text-align:center;
+  color:red;
+  font-weight:bold;
+}
+
+/* IN A4 */
+@media print {
+
+  body{
+    margin:0;
+  }
+
+  #print-area{
+    page-break-inside: avoid;
+  }
+
+  #print-header{
+    text-align:center;
+    margin-bottom:5px;        /* kéo sát bảng */
+    page-break-after: avoid; /* ❌ cấm ngắt sau tiêu đề */
+  }
+
+  #bangChamCong{
+    width:100%;
+    border-collapse:collapse;
+    page-break-inside:auto;  /* ✅ cho phép bảng tự ngắt */
+  }
+
+  #bangChamCong thead{
+    display:table-header-group; /* lặp header khi sang trang */
+  }
+
+  #bangChamCong tr{
+    page-break-inside:avoid;
+  }
+
+  #print-sign{
+    margin-top:20px;
+    page-break-inside:avoid;
+  }
+}
+/* =====SCBD THIET BỊ EXPLORER ===== */
+.explorer{
+  display:flex;
+  height:100vh;
+  border:1px solid #999;
+  background:#fff;
+}
+
+.title-bdsc{
+  text-align:center;
+  color:green;
+  font-weight:bold;
+}
+
+/* CỘT TRÁI */
+.tree{
+  width:220px;
+  border-right:1px solid #ccc;
+  padding:10px;
+  background:#f3f3f3;
+}
+.tree .folder{
+  padding:6px 8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.tree .folder:hover{
+  background:#d9e6f2;
+}
+
+/* CỘT PHẢI */
+.files{
+  flex:1;
+  padding:10px;
+  overflow:auto;
+}
+.file{
+  padding:6px;
+  border-bottom:1px solid #eee;
+}
+.file a{
+  text-decoration:none;
+  color:#000;
+}
+.file a:hover{
+  text-decoration:underline;
+  color:#0055aa;
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</head>
+
+<body>
+
+<!-- MENU -->
+<div class="menu">
+<a onclick="show('home')">Trang Chủ</a>
+<a onclick="show('gioithieu')">Giới Thiệu</a>
+<a onclick="show('bdsctb')">BDSC Thiết Bị</a>
+<a onclick="chamcong()">Chấm Công</a>
+<a onclick="vaoDuLieu()">Nhập Dữ Liệu</a>
+</div>
+
+<!-- TRANG CHỦ -->
+<div id="home" class="page">
+<h1>XƯỞNG XI MĂNG</h1>
+<p class="subtitle">--Trang Quản Lý Nội Bộ--</p>
+</div>
+<!-- GIỚI THIỆU -->
+<div id="gioithieu" class="page hidden" style="padding:20px">
+
+<h2 class="title-org">
+  SƠ ĐỒ TỔ CHỨC XƯỞNG XI MĂNG
+</h2>
+
+<!-- SƠ ĐỒ -->
+<div class="org-chart">
+
+  <div class="box top">Quản đốc</div>
+
+  <div class="row">
+    <div class="box">Phó quản đốc<br>Kỹ thuật</div>
+    <div class="box">Phó quản đốc<br>An toàn – Nhân sự</div>
+  </div>
+
+  <div class="box">Trưởng ca sản xuất</div>
+
+  <div class="row">
+    <div class="box">Đội cơ điện</div>
+    <div class="box">Đội vận hành</div>
+    <div class="box">Đội đóng bao</div>
+    <div class="box">Tổ thống kê</div>
+  </div>
+ </div>
+</div>
+
+<!-- ===== SỬA CHỮA THIẾT BỊ – EXPLORER ===== -->
+<div id="bdsctb" class="page hidden">
+<h2 class="title-bdsc">
+  SỬA CHỮA & BẢO DƯỠNG THIẾT BỊ
+</h2>
+
+  <div class="explorer">
+
+    <!-- CỘT TRÁI – FOLDER -->
+    <div class="tree">
+      <div class="folder" onclick="openFolder('sc2025')">📁 Năm 2025</div>
+      <div class="folder" onclick="openFolder('sc2026')">📁 Năm 2026</div>
+      <div class="folder" onclick="openFolder('tlkt1')">📁 Tài liệu kỹ thuật line1</div>
+      <div class="folder" onclick="openFolder('tlkt2')">📁 Tài liệu kỹ thuật line2</div>
+    </div>
+
+    <!-- CỘT PHẢI – FILE -->
+    <div class="files" id="fileView">
+
+      <!-- 2025 -->
+      <div class="file-group" id="sc2025">
+        <div class="file">
+          📄 <a href="docs/suachua/2024/KeHoachSuaChua_01_2024.xlsx" target="_blank">
+            Kế hoạch sửa chữa
+          </a>
+        </div>
+        <div class="file">
+          📄 <a href="https://docs.google.com/spreadsheets/d/1-xY2pvgo4A5sHVBQlvd9gfXcKSKFrzvHIMwwRW7Ithc/edit?usp=drivesdk" target="_blank">
+            Báo cáo sửa chữa(tuần/tháng/năm2025)
+          </a>
+        </div>
+      </div>
+
+      <!-- 2026 -->
+      <div class="file-group hidden" id="sc2026">
+        <div class="file">
+          📄 <a href="https://1drv.ms/x/c/2ee3992a41898859/IQD4rbv79rjoTqmfwZ82A0WkASTJqF6lcCCYEgdeqbD649U?e=kmd25H" target="_blank">
+            Ngân sách @ Hạng mục sửa chữa 2026
+          </a>
+        </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Kế hoạch sửa chữa tháng 1 đến 12 năm 2026
+          </a>
+        </div>
+        <div class="file">
+          📄 <a href="https://docs.google.com/spreadsheets/d/1cpXLHdtaaNm0vWtz3PnvIX-6h-BexaF8uXVYwS5_b2I/edit?usp=drivesdk" target="_blank">
+            Báo cáo sửa chữa(tuần/tháng/năm2026)
+          </a>
+        </div>
+      </div>
+
+      <!-- TÀI LIỆU KỸ THUẬT LINE1 -->
+      <div class="file-group hidden" id="tlkt1">
+        <div class="file">
+          📄 <a href="docs/suachua/huongdan/QuyTrinhBaoDuong.pdf" target="_blank">
+            Tài liệu 1
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Tài liệu 2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Tài liệu 3
+          </a>
+        </div>
+      </div>
+      <!-- TÀI LIỆU KỸ THUẬT LINE2 -->
+      <div class="file-group hidden" id="tlkt2">
+        <div class="file">
+          📄 <a href="https://drive.google.com/file/d/18ApxjYg43NbVIT2ITo4v9zIYQ2Gr1_Jt/view?usp=sharing" target="_blank">
+            Tài liệu điện nghiền line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="https://drive.google.com/file/d/1-HqQWfTW6WFjns5LkPwt2tTEcE714pgP/view?usp=sharing" target="_blank">
+            Tài liệu điện đóng bao line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="https://drive.google.com/file/d/1xGrkiODPqijz7W5jY1R_PLS8y1EeLvAg/view?usp=sharing" target="_blank">
+            Tài liệu điện nhập nguyên vật liệu line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="https://drive.google.com/file/d/1Jr8Pez92ieCQu31SEO2jtek7iWa6W__h/view?usp=sharing" target="_blank">
+            Tài liệu điện trạm 22kv-Máy cắt 6kv
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Tài liệu cơ cụm nghiền line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Tài liệu cơ cụm đóng bao line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Tài liệu cơ cụm nhập nguyên vật liệu line2
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Forder 1
+           </a>
+          </div>
+        <div class="file">
+          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+            Forder 2
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+</div>
+
+<!-- DỮ LIỆU -->
+<div id="dataPage" class="page hidden" style="padding:20px">
+<h2>NHẬP NHÂN SỰ</h2>
+<div class="info">
+Bộ phận:
+<select id="dl_bp">
+<option value="thukho">Thủ kho</option>
+<option value="codien">Cơ điện</option>
+<option value="dongbao">Đóng bao</option>
+<option value="quanly">Quản lý</option>
+</select><br><br>
+Họ tên: <input id="dl_ten" style="width:200px"><br><br>
+Chức vụ: <input id="dl_cv" style="width:200px"><br><br>
+<button onclick="luuNS()">💾 Lưu</button>
+<button onclick="xoaNS()">🗑 Xoá</button>
+<button onclick="show('home')">⬅ Trang chủ</button>
+</div>
+</div>
+
+<!-- NỘI BỘ -->
+<div id="noibo" class="page hidden" style="padding:4px">
+
+<button onclick="show('home')">⬅ Trang chủ</button>
+<button onclick="luuWeb()">💾 Lưu</button>
+<button onclick="taiWeb()">📂 tải</button>
+<button onclick="window.print()">🖨 In</button>
+<button onclick="xuatExcel()">📊 Xuất Excel</button>
+<!-- HEADER IN -->
+<div id="print-area">
+  <div id="print-header">
+    <div class="title-xuong">XƯỞNG XI MĂNG</div>
+    <div class="title-bcc">BẢNG CHẤM CÔNG</div>
+    <div class="title-info">
+    <span id="p_bp"></span> —
+    Tháng <span id="p_th"></span>/<span id="p_n"></span>
+   </div>
+ </div>
+<div class="info">
+Bộ phận:
+<select id="bophan" onchange="taoBang()">
+<option value="thukho">Thủ kho</option>
+<option value="codien">Cơ điện</option>
+<option value="dongbao">Đóng bao</option>
+<option value="quanly">Quản lý</option>
+</select>
+Tháng <input id="thang" size="2">
+Năm <input id="nam" size="4">
+<button onclick="taoBang()">Tạo</button>
+ </div>
+
+ <table id="bangChamCong">
+ <thead>
+ <tr>
+<th rowspan="3">STT</th>
+<th rowspan="3">Họ tên</th>
+<th rowspan="3">Chức vụ</th>
+<th colspan="31">Ngày</th>
+<th rowspan="3">Ngày làm</th>
+<th rowspan="3">K3</th>
+<th rowspan="3">Ốm</th>
+<th rowspan="3">Phép</th>
+<th rowspan="3">Lễ</th>
+<th rowspan="3">RL</th>
+<th rowspan="3">VR</th>
+<th rowspan="3">Tổng</th>
+</tr>
+<tr id="ngay"></tr>
+<tr id="thu"></tr>
+</thead>
+<tbody id="noiDung"></tbody>
+</table>
+
+<div id="print-sign">
+Quản đốc XXM:<br><br>…………………
+</div>
+
+</div>
+
+<script>
+const home=document.getElementById("home");
+const noibo=document.getElementById("noibo");
+const dataPage=document.getElementById("dataPage");
+const ngay=document.getElementById("ngay");
+const thu=document.getElementById("thu");
+const noiDung=document.getElementById("noiDung");
+const thang=document.getElementById("thang");
+const nam=document.getElementById("nam");
+const bophan=document.getElementById("bophan");
+let nhansu=JSON.parse(localStorage.getItem("NHANSU")||"{}");
+
+function show(pageId){
+  document.querySelectorAll(".page").forEach(p=>{
+    p.classList.add("hidden");
+  });
+  document.getElementById(pageId).classList.remove("hidden");
+}
+
+function chamcong(){
+  let mk = prompt("Nhập mật khẩu:");
+  if(mk==="123456"){
+    show("noibo");
+     setThangNamHienTai();
+    taoBang();
+  }else{
+    alert("Sai mật khẩu");
+  }
+}
+
+function vaoDuLieu(){
+  let mk = prompt("Nhập mật khẩu:");
+  if(mk==="123456"){
+    show("dataPage");
+  }else{
+    alert("Sai mật khẩu");
+  }
+}
+
+
+function luuNS(){
+let bp=dl_bp.value;
+if(!nhansu[bp]) nhansu[bp]=[];
+nhansu[bp].push([dl_ten.value,dl_cv.value]);
+localStorage.setItem("NHANSU",JSON.stringify(nhansu));
+alert("Đã lưu nhân sự");
+}
+
+function xoaNS(){
+let bp=dl_bp.value;
+if(nhansu[bp]&&nhansu[bp].length){nhansu[bp].pop();localStorage.setItem("NHANSU",JSON.stringify(nhansu));}
+alert("Đã xóa nhân sự");
+}
+
+function taoBang(){
+ngay.innerHTML="";thu.innerHTML="";noiDung.innerHTML="";
+let th=+thang.value,n=+nam.value;
+let soNgay=new Date(n,th,0).getDate();
+let map=["CN","T2","T3","T4","T5","T6","T7"];
+
+for(let d=1;d<=soNgay;d++){
+ngay.innerHTML+=`<th>${d}</th>`;
+thu.innerHTML+=`<th>${map[new Date(n,th-1,d).getDay()]}</th>`;
+}
+
+(nhansu[bophan.value]||[]).forEach((p,i)=>{
+let r=`<tr><td>${i+1}</td><td>${p[0]}</td><td>${p[1]}</td>`;
+for(let d=1;d<=soNgay;d++)
+r+=`<td><input oninput="tinh(this)"><span class="print-val"></span></td>`;
+r+=`<td class="total nl">0</td><td class="total k3">0</td>
+<td class="total om">0</td><td class="total p">0</td>
+<td class="total l">0</td><td class="total rl">0</td><td class="total vr">0</td><td class="total t">0</td></tr>`;
+noiDung.innerHTML+=r;
+});
+
+p_bp.innerText=bophan.options[bophan.selectedIndex].text;
+p_th.innerText=th;p_n.innerText=n;
+}
+
+function tinh(e){
+let r=e.closest("tr"),nl=0,k3=0,om=0,p=0,l=0,rl=0,vr=0;
+r.querySelectorAll("input").forEach(i=>{
+let v=i.value.toUpperCase().trim();
+i.nextElementSibling.innerText=v;
+if(v==="1"||v==="2") nl++;
+else if(v==="3"){nl++;k3++;}
+else if(v==="12") nl+=2;
+else if(v==="11/2") nl+=1.5;
+else if(v==="21/2") nl+=1.5;
+else if(v==="31/2") nl+=1.5;
+else if(v==="13"||v==="23"){nl+=2;k3++;}
+else if(v==="32"){nl+=2;k3++;}
+else if(v==="1/2") nl+=0.5;
+else if(v==="O") om++;
+else if(v==="P") p++;
+else if(v==="L") l++;
+else if(v==="RL") rl++;
+else if(v==="VR") vr++;
+});
+r.querySelector(".nl").innerText=nl;
+r.querySelector(".k3").innerText=k3;
+r.querySelector(".om").innerText=om;
+r.querySelector(".p").innerText=p;
+r.querySelector(".l").innerText=l;
+r.querySelector(".rl").innerText=rl;
+r.querySelector(".vr").innerText=vr;
+r.querySelector(".t").innerText=nl+om+p+(l*3)+rl;
+}
+
+
+function tinhDong(tr){
+  let cong = 0, k3 = 0, om = 0, phep = 0, le = 0, rl = 0, vr = 0;
+
+  tr.querySelectorAll('.ngay').forEach(o=>{
+    let v = o.value.trim();
+
+    if(v==="1" || v==="2") cong += 1;
+    if(v==="3"){ cong += 1; k3++; }
+
+    if(v==="12") cong += 2;
+    if(v==="13" || v==="23" || v==="32"){ cong += 2; k3++; }
+
+    if(v==="1/2") cong += 0.5;
+
+    if(v==="O") om++;
+    if(v==="P") phep++;
+    if(v==="L") le += 3;
+    if(v==="RL") riengl++;
+    if(v==="VR") riengol++;
+  });
+
+  tr.querySelector('.c_cong').innerText = cong;
+  tr.querySelector('.c_k3').innerText   = k3;
+  tr.querySelector('.c_om').innerText   = om;
+  tr.querySelector('.c_phep').innerText = phep;
+  tr.querySelector('.c_le').innerText   = le;
+  tr.querySelector('.c_riengl').innerText   = riengl;
+  tr.querySelector('.c_riengol').innerText   = riengol;
+  tr.querySelector('.c_tong').innerText = cong + le;
+}
+
+
+
+
+
+function loadDuLieu(){
+  // sau khi gán xong value cho các ô input
+
+  document.querySelectorAll('#bangChamCong tbody tr')
+    .forEach(tr => tinhDong(tr));
+}
+
+
+function luuWeb(){
+let d=[];
+document.querySelectorAll("#noiDung tr").forEach(tr=>{
+let r=[];
+tr.querySelectorAll("input").forEach(i=>r.push(i.value));
+d.push(r);
+});
+localStorage.setItem(`CC_${bophan.value}_${thang.value}_${nam.value}`,JSON.stringify(d));
+}
+
+function taiWeb(){
+let d=JSON.parse(localStorage.getItem(`CC_${bophan.value}_${thang.value}_${nam.value}`)||"[]");
+document.querySelectorAll("#noiDung tr").forEach((tr,i)=>{
+tr.querySelectorAll("input").forEach((inp,j)=>{
+if(d[i]){
+  inp.value=d[i][j];
+  inp.nextElementSibling.innerText=d[i][j];
+}
+});
+// tính lại tổng sau khi load
+if(tr.querySelector("input")){
+  tinh(tr.querySelector("input"));
+}
+});
+}
+
+
+
+function xuatExcel(){
+  const wb = XLSX.utils.book_new();
+
+  const ws_data = [];
+
+  const soCot = 3 + document.querySelectorAll("#ngay th").length + 5;
+  const endCol = XLSX.utils.encode_col(soCot-1);
+
+  // ===== TIÊU ĐỀ =====
+  ws_data.push([`XƯỞNG XI MĂNG`]);
+  ws_data.push([`BẢNG CHẤM CÔNG`]);
+  ws_data.push([`Bộ phận: ${bophan.options[bophan.selectedIndex].text}  -  Tháng ${thang.value}/${nam.value}`]);
+  ws_data.push([]);
+
+  // ===== HEADER =====
+  const header1 = ["STT","Họ tên","Chức vụ"];
+  document.querySelectorAll("#ngay th").forEach(th=>header1.push(th.innerText));
+  header1.push("Ngày làm","K3","Ốm","Phép","Lễ","RL","VR","Tổng");
+  ws_data.push(header1);
+
+  // ===== DỮ LIỆU =====
+  document.querySelectorAll("#noiDung tr").forEach(tr=>{
+    const row=[];
+    tr.querySelectorAll("td").forEach(td=>{
+      const inp=td.querySelector("input");
+      row.push(inp ? inp.value : td.innerText);
+    });
+    ws_data.push(row);
+  });
+
+  // ===== CHỮ KÝ CUỐI BẢNG =====
+ws_data.push([]);
+
+const signRow = Array(soCot).fill("");
+signRow[soCot-2] = "Quản đốc XXM:";
+ws_data.push(signRow);
+
+
+  const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+  // ===== MERGE TIÊU ĐỀ =====
+  ws["!merges"]=[
+    {s:{r:0,c:0},e:{r:0,c:soCot-1}},
+    {s:{r:1,c:0},e:{r:1,c:soCot-1}},
+    {s:{r:2,c:0},e:{r:2,c:soCot-1}},
+  ];
+   // merge chữ ký sang phải
+  ws["!merges"].push({
+    s:{r: ws_data.length-1, c: soCot-2},
+    e:{r: ws_data.length-1, c: soCot-1}
+  });
+
+  // ===== CĂN CỘT =====
+  ws["!cols"]=[
+    {wch:5},{wch:25},{wch:18},
+    ...Array(31).fill({wch:4}),
+    {wch:8},{wch:6},{wch:6},{wch:6},{wch:6},{wch:6},{wch:6},{wch:8}
+  ];
+
+  // ===== TRANG IN A4 NGANG =====
+  ws["!pageSetup"]={
+    paper:9,
+    orientation:"landscape",
+    fitToHeight:1,
+    fitToWidth:1
+  };
+
+  XLSX.utils.book_append_sheet(wb,ws,"Bang cham cong");
+
+  XLSX.writeFile(
+    wb,
+    `Cham_cong_${bophan.value}_${thang.value}_${nam.value}.xlsx`
+  );
+}
+
+function openFolder(id){
+  document.querySelectorAll(".file-group")
+    .forEach(f=>f.classList.add("hidden"));
+
+  document.getElementById(id).classList.remove("hidden");
+}
+
+
+function setThangNamHienTai(){
+  const now = new Date();
+  const thangHT = now.getMonth() + 1; // JS tính tháng từ 0
+  const namHT = now.getFullYear();
+
+  document.getElementById("thang").value = thangHT;
+  document.getElementById("nam").value = namHT;
+}
+
+
+
+show("home");
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+</body>
+</html>
