@@ -1104,7 +1104,7 @@ document.addEventListener("keydown", function (e) {
 
 
 
-const BDSC_API = "https://script.google.com/macros/s/AKfycbyCjhYosUbrcbu2u0fjwrFTAdvSoZwuINABMtC7G5DgYfXtEKbvAwlFO_fRUeJ8MFz2/exec";
+const BDSC_API = "https://script.google.com/macros/s/AKfycbz74n65xEB15189JHJVZ85FvhGv-EnObDIsrbR8fOfFMoJr1DAZkOurZQQMHsYG374QaQ/exec";
 
 /* ===== LƯU ===== */
 function luuBDSC(){
@@ -1141,15 +1141,6 @@ function taiBDSC(){
     .then(r=>r.text())
     .then(t=>bdscText.value = t)
     .catch(()=>alert("Không tải được dữ liệu"));
-}
-
-function locBDSC(){
-  const date = bdscDate.value;
-  const key  = bdscFilter.value;
-
-  fetch(`${BDSC_API}?date=${date}&filter=${encodeURIComponent(key)}`)
-    .then(r=>r.text())
-    .then(t=>bdscText.value = t || "Không có dữ liệu");
 }
 
 
