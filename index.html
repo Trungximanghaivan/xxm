@@ -76,6 +76,11 @@ input{width:28px;border:none;text-align:center}
   page-break-inside: avoid;
 }
 
+
+
+
+
+
 /* IN */
 @media print{
 @page{size:A4 landscape;margin:8mm}
@@ -122,6 +127,19 @@ table,tr,td,th{page-break-inside:avoid}
   padding:20px;
   overflow:hidden;
 }
+
+
+#bdsc{
+  margin-top:30px;
+  min-height:calc(100vh - 30px);
+  padding:20px;
+  box-sizing:border-box;
+  background:#f7f9fc;
+}
+
+
+
+
 
 /* ===== GIỚI THIỆU – SƠ ĐỒ ===== */
 .org-chart{
@@ -206,7 +224,8 @@ cursor:pointer
 /* =====SCBD THIET BỊ EXPLORER ===== */
 .explorer{
   display:flex;
-  height:100vh;
+  min-height:500px;
+  height:auto;
   border:1px solid #999;
   background:#fff;
 }
@@ -333,6 +352,80 @@ cursor:pointer
 }
 .hidden{display:none}
 
+
+/* ===== CẬP NHẬT BDSC ===== */
+
+#bdsc{
+  height: calc(100vh - 50px); /* trừ chiều cao menu */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== PHẦN CỐ ĐỊNH ===== */
+.bdsc-fixed{
+  position: sticky;
+  top: 50px;               /* nằm dưới menu */
+  background: #ffffff;
+  z-index: 20;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+/* ===== TOOL ===== */
+.bdsc-tools{
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Ô ngày – nhỏ gọn */
+#bdscDate{
+  width: 130px;
+}
+
+/* Ô tìm kiếm – chiếm phần còn lại */
+#bdscFilter{
+  flex: 1;
+  min-width: 180px;
+}
+
+/* ===== PHẦN CUỘN ===== */
+.bdsc-scroll{
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* Textarea */
+#bdscText{
+  width: 100%;
+  min-height: 100%;
+  resize: none;
+  box-sizing: border-box;
+}
+
+
+@media (max-width: 768px){
+
+  .bdsc-tools{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #bdscDate,
+  #bdscFilter,
+  .bdsc-tools button{
+    width: 100%;
+  }
+
+  .bdsc-fixed h2{
+    font-size: 18px;
+    text-align: center;
+  }
+}
+
+
 </style>
 
 </head>
@@ -346,6 +439,7 @@ cursor:pointer
 <a onclick="show('bdsctb')">BDSC Thiết Bị</a>
 <a onclick="openProtected('noibo')">Chấm Công</a>
 <a onclick="openProtected('dataPage')">Nhập Dữ Liệu</a>
+<a onclick="openProtected('bdsc')">Cập Nhật BDSC</a>
 </div>
 
 <!-- TRANG CHỦ -->
@@ -432,7 +526,7 @@ cursor:pointer
           </a>
         </div>
         <div class="file">
-          📄 <a href="docs/suachua/2024/BaoCaoThang1.docx" target="_blank">
+          📄 <a href="https://docs.google.com/spreadsheets/d/1ihgMAydW163C0ufj8gZhatQ7RhUxPL2N/edit?usp=drive_link&ouid=101143351089621782582&rtpof=true&sd=true" target="_blank">
             Kế hoạch sửa chữa tháng 1 đến 12 năm 2026
           </a>
         </div>
@@ -446,7 +540,7 @@ cursor:pointer
       <!-- TÀI LIỆU KỸ THUẬT LINE1 -->
       <div class="file-group hidden" id="tlkt1">
         <div class="file">
-          📄 <a href="docs/suachua/huongdan/QuyTrinhBaoDuong.pdf" target="_blank">
+          📄 <a href="https://drive.google.com/file/d/1iAGlzQW00fGK_1s_Q1_RxE0_rm-AElSo/view?usp=sharing" target="_blank">
             Tài liệu 1
            </a>
           </div>
@@ -547,6 +641,35 @@ z-index:9999;
 </div>
 
 
+<!-- ===== CẬP NHẬT BDSC ===== -->
+
+<div id="bdsc" class="page hidden">
+
+  <!-- KHỐI CỐ ĐỊNH -->
+  <div class="bdsc-fixed">
+
+    <h2>CẬP NHẬT BẢO DƯỠNG SỬA CHỮA</h2>
+
+    <div class="bdsc-tools">
+      <input type="date" id="bdscDate">
+      <input type="text" id="bdscFilter" placeholder="🔍 Tìm nội dung...">
+      <button onclick="locBDSC()">Lọc</button>
+      <button onclick="luuBDSC()">Lưu</button>
+      <button onclick="taiBDSC()">Tải</button>
+    </div>
+
+  </div>
+
+  <!-- KHỐI CUỘN -->
+  <div class="bdsc-scroll">
+    <textarea id="bdscText"></textarea>
+  </div>
+
+</div>
+
+
+
+
 <!-- DỮ LIỆU -->
 <div id="dataPage" class="page hidden" style="padding:20px">
 <h2>NHẬP NHÂN SỰ</h2>
@@ -625,6 +748,12 @@ Quản đốc XXM:<br><br>…………………
 
 </div>
 
+
+
+
+
+
+
 <script>
 const home=document.getElementById("home");
 const noibo=document.getElementById("noibo");
@@ -641,7 +770,11 @@ function show(pageId){
   document.querySelectorAll(".page").forEach(p=>{
     p.classList.add("hidden");
   });
-  document.getElementById(pageId).classList.remove("hidden");
+  const page = document.getElementById(pageId);
+  if(page){
+    page.classList.remove("hidden");
+    window.scrollTo(0,0);   // ✅ QUAN TRỌNG
+  }
 }
 
 
@@ -675,10 +808,17 @@ thu.innerHTML+=`<th>${map[new Date(n,th-1,d).getDay()]}</th>`;
 (nhansu[bophan.value]||[]).forEach((p,i)=>{
 let r=`<tr><td>${i+1}</td><td>${p[0]}</td><td>${p[1]}</td>`;
 for(let d=1;d<=soNgay;d++)
-r+=`<td><input oninput="tinh(this)"><span class="print-val"></span></td>`;
+r+=`<td>
+        <input class="ngay"
+          oninput="
+            tinh(this);
+            tinhDong(this.closest('tr'));
+          ">
+        <span class="print-val"></span>
+      </td>`;
 r+=`<td class="total nl">0</td><td class="total k3">0</td>
 <td class="total om">0</td><td class="total p">0</td>
-<td class="total l">0</td><td class="total rl">0</td><td class="total vr">0</td><td class="total t">0</td></tr>`;
+<td class="total l">0</td><td class="total rl">0</td><td class="total vr">0</td><td class="total s">0</td></tr>`;
 noiDung.innerHTML+=r;
 });
 
@@ -702,7 +842,13 @@ else if(v==="32"){nl+=2;k3++;}
 else if(v==="1/2") nl+=0.5;
 else if(v==="O") om++;
 else if(v==="P") p++;
-else if(v==="L") l++;
+else if(v==="L") l++
+else if(v==="T") l++;
+else if(v==="L1"){nl++;l+=2;}
+else if(v==="L2"){nl++;l+=2;}
+else if(v==="L3"){nl++;l+=2;}
+else if(v==="T11/2"){nl+=1.5;l+=2;}
+else if(v==="T31/2"){nl+=1.5;l+=2;}
 else if(v==="RL") rl++;
 else if(v==="VR") vr++;
 });
@@ -713,52 +859,8 @@ r.querySelector(".p").innerText=p;
 r.querySelector(".l").innerText=l;
 r.querySelector(".rl").innerText=rl;
 r.querySelector(".vr").innerText=vr;
-r.querySelector(".t").innerText=nl+om+p+(l*3)+rl;
+r.querySelector(".s").innerText=nl+om+p+l+rl;
 }
-
-
-function tinhDong(tr){
-  let cong = 0, k3 = 0, om = 0, phep = 0, le = 0, rl = 0, vr = 0;
-
-  tr.querySelectorAll('.ngay').forEach(o=>{
-    let v = o.value.trim();
-
-    if(v==="1" || v==="2") cong += 1;
-    if(v==="3"){ cong += 1; k3++; }
-
-    if(v==="12") cong += 2;
-    if(v==="13" || v==="23" || v==="32"){ cong += 2; k3++; }
-
-    if(v==="1/2") cong += 0.5;
-
-    if(v==="O") om++;
-    if(v==="P") phep++;
-    if(v==="L") le += 3;
-    if(v==="RL") riengl++;
-    if(v==="VR") riengol++;
-  });
-
-  tr.querySelector('.c_cong').innerText = cong;
-  tr.querySelector('.c_k3').innerText   = k3;
-  tr.querySelector('.c_om').innerText   = om;
-  tr.querySelector('.c_phep').innerText = phep;
-  tr.querySelector('.c_le').innerText   = le;
-  tr.querySelector('.c_riengl').innerText   = riengl;
-  tr.querySelector('.c_riengol').innerText   = riengol;
-  tr.querySelector('.c_tong').innerText = cong + le;
-}
-
-
-
-
-
-function loadDuLieu(){
-  // sau khi gán xong value cho các ô input
-
-  document.querySelectorAll('#bangChamCong tbody tr')
-    .forEach(tr => tinhDong(tr));
-}
-
 
 function luuWeb(){
 let d=[];
@@ -785,8 +887,6 @@ if(tr.querySelector("input")){
 }
 });
 }
-
-
 
 function xuatExcel(){
   const wb = XLSX.utils.book_new();
@@ -881,6 +981,17 @@ function setThangNamHienTai(){
 }
 
 
+function setNgayHienTai(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+
+  document.getElementById("bdscDate").value =
+    `${yyyy}-${mm}-${dd}`;
+}
+
+
 const slides = document.querySelectorAll(".event-slider .slide");
 let index = 0;
 
@@ -915,6 +1026,7 @@ function checkPassword(){
     show(targetPage);
     setThangNamHienTai();   // ✅ TỰ ĐỘNG CẬP NHẬT
     taoBang();              // ✅ TẠO BẢNG THEO THÁNG MỚI
+    setNgayHienTai();       // tự động set ngày hôm nay
   }else{
     alert("Sai mật khẩu");
   }
@@ -938,6 +1050,123 @@ function closePassword(){
   document.getElementById("pwModal").style.display = "none";
   targetPage = "";
 }
+
+
+
+/* ===============================
+   DI CHUYỂN Ô CHẤM CÔNG BẰNG PHÍM
+   ⬅ ➡ ⬆ ⬇  |  Enter = xuống dòng
+   KHÔNG ẢNH HƯỞNG SUM / IN / LƯU
+================================= */
+
+document.addEventListener("keydown", function (e) {
+  const el = e.target;
+  if (!el.classList.contains("ngay")) return;
+
+  const td = el.closest("td");
+  const tr = el.closest("tr");
+  const table = el.closest("table");
+  if (!td || !tr || !table) return;
+
+  const col = td.cellIndex;
+  const row = tr.rowIndex;
+
+  let next;
+
+  switch (e.key) {
+    case "ArrowLeft":
+      next = tr.cells[col - 1]?.querySelector("input.ngay");
+      break;
+
+    case "ArrowRight":
+      next = tr.cells[col + 1]?.querySelector("input.ngay");
+      break;
+
+    case "ArrowUp":
+      next = table.rows[row - 1]?.cells[col]?.querySelector("input.ngay");
+      break;
+
+    case "ArrowDown":
+    case "Enter":
+      next = table.rows[row + 1]?.cells[col]?.querySelector("input.ngay");
+      break;
+
+    default:
+      return;
+  }
+
+  if (next) {
+    e.preventDefault();
+    next.focus();
+    next.select();
+  }
+});
+
+
+
+const BDSC_API = "https://script.google.com/macros/s/AKfycbwzTWKJxKz8Lq0jg1tIioEG1sfeYHaIA_kC1pjUNjNef5tH-s4-KjoWBP7B-yuYrz6Yjw/exec";
+
+/* ===== LƯU ===== */
+function luuBDSC(){
+  const date = bdscDate.value;
+  const text = bdscText.value.trim();
+
+  if(!date || !text){
+    alert("Thiếu ngày hoặc nội dung");
+    return;
+  }
+
+  const fd = new FormData();
+  fd.append("date", date);
+  fd.append("text", text);
+
+  fetch(BDSC_API,{
+    method:"POST",
+    body: fd
+  })
+  .then(r=>r.text())
+  .then(()=>alert("Đã lưu BDSC"))
+  .catch(()=>alert("Lỗi kết nối Google"));
+}
+
+/* ===== TẢI ===== */
+function taiBDSC(){
+  const date = bdscDate.value;
+  if(!date){
+    alert("Chọn ngày cần xem");
+    return;
+  }
+
+  fetch(BDSC_API + "?date=" + date)
+    .then(r=>r.text())
+    .then(t=>bdscText.value = t)
+    .catch(()=>alert("Không tải được dữ liệu"));
+}
+
+function locBDSC(){
+  const date   = document.getElementById("bdscDate").value;
+  const filter = document.getElementById("bdscFilter").value;
+
+  if(!date){
+    alert("Chọn ngày trước");
+    return;
+  }
+  if(!filter){
+    alert("Nhập nội dung cần tìm");
+    return;
+  }
+
+  fetch(`${BDSC_API}?date=${date}&filter=${encodeURIComponent(filter)}`)
+    .then(r=>r.text())
+    .then(t=>{
+      document.getElementById("bdscText").value =
+        t || "Không tìm thấy dữ liệu";
+    })
+    .catch(()=>{
+      alert("Không kết nối được Google");
+    });
+}
+
 
 show("home");
 </script>
