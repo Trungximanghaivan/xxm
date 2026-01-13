@@ -1104,7 +1104,7 @@ document.addEventListener("keydown", function (e) {
 
 
 
-const BDSC_API = "https://script.google.com/macros/s/AKfycbwzTWKJxKz8Lq0jg1tIioEG1sfeYHaIA_kC1pjUNjNef5tH-s4-KjoWBP7B-yuYrz6Yjw/exec";
+const BDSC_API = "https://script.google.com/macros/s/AKfycbyCjhYosUbrcbu2u0fjwrFTAdvSoZwuINABMtC7G5DgYfXtEKbvAwlFO_fRUeJ8MFz2/exec";
 
 /* ===== LƯU ===== */
 function luuBDSC(){
@@ -1144,28 +1144,14 @@ function taiBDSC(){
 }
 
 function locBDSC(){
-  const date   = document.getElementById("bdscDate").value;
-  const filter = document.getElementById("bdscFilter").value;
+  const date = bdscDate.value;
+  const key  = bdscFilter.value;
 
-  if(!date){
-    alert("Chọn ngày trước");
-    return;
-  }
-  if(!filter){
-    alert("Nhập nội dung cần tìm");
-    return;
-  }
-
-  fetch(`${BDSC_API}?date=${date}&filter=${encodeURIComponent(filter)}`)
+  fetch(`${BDSC_API}?date=${date}&filter=${encodeURIComponent(key)}`)
     .then(r=>r.text())
-    .then(t=>{
-      document.getElementById("bdscText").value =
-        t || "Không tìm thấy dữ liệu";
-    })
-    .catch(()=>{
-      alert("Không kết nối được Google");
-    });
+    .then(t=>bdscText.value = t || "Không có dữ liệu");
 }
+
 
 
 show("home");
