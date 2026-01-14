@@ -656,6 +656,7 @@ z-index:9999;
       <button onclick="locBDSC()">Lọc</button>
       <button onclick="luuBDSC()">Lưu</button>
       <button onclick="taiBDSC()">Tải</button>
+      <button onclick="xoaBDSC()">xoá</button>
     </div>
 
   <!-- KHỐI CUỘN -->
@@ -1173,6 +1174,16 @@ function locBDSC(){
 }
 
 
+function xoaBDSC(){
+  if(!bdscText.value){
+    alert("Không có dữ liệu để xóa");
+    return;
+  }
+
+  if(confirm("Bạn có chắc muốn xóa toàn bộ nội dung đang hiển thị không?")){
+    bdscText.value = "";
+  }
+}
 
 
 
