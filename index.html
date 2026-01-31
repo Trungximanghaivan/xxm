@@ -1681,16 +1681,17 @@ function doiThang(){
 
 /* ====== TÍNH CÔNG TỰ ĐỘNG ====== */
 function tinhCong(tr){
-  let ngaylam = 0, k3 = 0, om = 0, phep = 0, le = 0, rl = 0, vl = 0;
+  let ngaylam = 0, k3 = 0, om = 0, phep = 0, le = 0, rl = 0, vl = 0, bu = 0;
 
   for(let i=3;i<34;i++){ // cột ngày 1→31
     const v = (tr.children[i]?.innerText || "").toUpperCase().trim();
 
     // ===== NGÀY LÀM =====
-    if (["1","2","3"].includes(v)) ngaylam += 1;
-    else if (["12","21","23","32","31","13"].includes(v)) ngaylam += 2;
+    if (["1","2","3","L1","L2","L3"].includes(v)) ngaylam += 1;
+    else if (["12","21","23","32","31","13","L12","L23","L32"].includes(v)) ngaylam += 2;
     else if (v === "1/2") ngaylam += 0.5;
     else if (["11/2","21/2","31/2"].includes(v)) ngaylam += 1.5;
+    else if (["123"].includes(v)) ngaylam += 3;
 
     // ===== KÝ HIỆU KHÁC =====
     if (v === "3") k3 += 1;
@@ -1699,9 +1700,12 @@ function tinhCong(tr){
     if (v === "L") le += 1;
     if (v === "RL") rl += 1;
     if (v === "VL") vl += 1;
+    if (["L1","L2","L3"].includes(v)) bu += 2;
+    if (["L12","L23","L32"].includes(v)) bu += 4;
+    if (["L23","L32","L3"].includes(v)) k3 += 1;
   }
 
-  const bu = le * 2;
+  
   const tong = ngaylam + om + phep + le + rl + bu;
 
   tr.querySelector(".ngaylam").innerText = ngaylam;
