@@ -160,6 +160,29 @@ tbody th{
 .month-box{
   text-align:center;
   margin-bottom:10px;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;  
+}
+
+.sum-box{
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+
+  padding: 2px 6px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+/* Số trong SUM */
+.sum-box b{
+  min-width: 56px;     /* đủ hiển thị 100.000 */
+  text-align: right;
 }
 
 /* ===== CHỈ IN KHU VỰC BẢNG ===== */
@@ -1063,6 +1086,18 @@ cursor:pointer
           <button onclick="printMonthTablexxm1()">🖨 In</button>
           <button onclick="showMonthLine('l1')">LINE 1</button>
           <button onclick="showMonthLine('l2')">LINE 2</button>
+
+          <div class="sum-box">
+            Σ ThángL1: <b id="sumMonthXM1">0</b> tấn
+          </div>
+
+          <div class="sum-box">
+            Σ NămL1: <b id="sumYearXM1">0</b> tấn
+          </div>
+
+          <div class="sum-box">
+            Σ NămXXM: <b id="sumYearXM_L1">0</b> tấn
+          </div>
         </div>
 
         <table id="tblMonthxxm1">
@@ -1099,6 +1134,18 @@ cursor:pointer
           <button onclick="printMonthTablexxm()">🖨 In</button>
           <button onclick="showMonthLine('l1')">LINE 1</button>
           <button onclick="showMonthLine('l2')">LINE 2</button>
+
+          <div class="sum-box">
+            Σ ThángL2: <b id="sumMonthXM2">0</b> tấn
+          </div>
+
+          <div class="sum-box">
+            Σ NămL2: <b id="sumYearXM2">0</b> tấn
+          </div>
+      
+          <div class="sum-box">
+            Σ NămXXM: <b id="sumYearXM_L2">0</b> tấn
+          </div>
         </div>
 
         <table id="tblMonthxxm">
@@ -1497,11 +1544,12 @@ cursor:pointer
 /* ===== API ===== */
 const API = "https://script.google.com/macros/s/AKfycbwq4azJEBAXEWKYDyodyXdqUqlZD2z53Xl2PF-8IxDebglheSutazhWBhSdBcw9wzoYgQ/exec";
 const NVL1_API = "https://script.google.com/macros/s/AKfycbylqR_QDyBVw0eL-_VT1DBr8yJYXQnxAfun_WPFtLr8MQjXGFS72EGaIWZFYwl1XYWvhg/exec";
-const XXM_API = "https://script.google.com/macros/s/AKfycbz1tUsyFiQgdTBICrsfZGK5gAefAE7gAQOqiYWTu1sBqVrbE2DlklXsYrN7rn1JxmTW3g/exec";
-const XXM1_API = "https://script.google.com/macros/s/AKfycbyClkogEI5fsaz0zii54kgQrweZ52WqEeZLm-8Yu7cCra40X3Dv2F3-aY2Iqi8BoI4A/exec";
+const XXM_API = "https://script.google.com/macros/s/AKfycbwwU5lfUTjZkZzcTWjD87RzaiedCikkPpVhOLnslJVc7BQp0HgUB74Z_ss9o5sDbLrI7Q/exec";
+const XXM1_API = "https://script.google.com/macros/s/AKfycbx_go9Sczrwkn7a02iYplh9MVfHXJcqukUxTGWZTJMPpJx_--X05R0HrXU8Vf2mmySW/exec";
 const APICC_URL = "https://script.google.com/macros/s/AKfycbxo7OY5WiMYkTtgxgDubjJE-zv64BRUfpgEk2-MAgBdLUkdsYkWj5Q0cEnaS8PBUFTDgg/exec";
 const BDSC_API = "https://script.google.com/macros/s/AKfycbzdF77jmDDAeWRxcC5rLcme3oJZGnEkOuUpxLikmK8LQG8TaHEtDYd9IAfkj1nggU9yWQ/exec";
-
+let sumYearXM1 = 0;
+let sumYearXM2 = 0;
 /* ===== GLOBAL TIMEOUT ===== */
 let pageTimer = null;
 let currentProtectedPage = null;
@@ -2371,8 +2419,32 @@ function loadMonthxxm(){
       // 👉 SUM: làm tròn 2 số thập phân
       tr.innerHTML += `<td><b>${sum.toFixed(2)}</b></td>`;
     });
+    // ===============================
+    // 🔥 LOAD SUM THÁNG + SUM NĂM
+    // ===============================
+    fetch(XXM_API,{
+      method:"POST",
+      body:JSON.stringify({
+        action:"sumMonthYearXXM",
+        month: monthPickxxm.value
+      })
+    })
+    .then(r=>r.json())
+    .then(sum=>{
+      if(!sum.ok) return;
+
+      document.getElementById("sumMonthXM2").innerText =
+        Number(sum.sumMonth).toLocaleString("vi-VN");
+
+      document.getElementById("sumYearXM2").innerText =
+        Number(sum.sumYear).toLocaleString("vi-VN");
+
+      sumYearXM2 = Number(sum.sumYear) || 0;
+      capNhatSumNamXM();
+    });
   });
 }
+
 
 
 
@@ -2416,10 +2488,31 @@ function loadMonthxxm1(){
       // 👉 SUM: làm tròn 2 số thập phân
       tr.innerHTML += `<td><b>${sum.toFixed(2)}</b></td>`;
     });
+    // ===============================
+    // 🔥 LOAD SUM THÁNG + SUM NĂM
+    // ===============================
+    fetch(XXM1_API,{
+      method:"POST",
+      body:JSON.stringify({
+        action:"sumMonthYearXXM1",
+        month: monthPickxxm1.value
+      })
+    })
+    .then(r=>r.json())
+    .then(sum=>{
+      if(!sum.ok) return;
+
+      document.getElementById("sumMonthXM1").innerText =
+        Number(sum.sumMonth).toLocaleString("vi-VN");
+
+      document.getElementById("sumYearXM1").innerText =
+        Number(sum.sumYear).toLocaleString("vi-VN");
+
+      sumYearXM1 = Number(sum.sumYear) || 0;
+      capNhatSumNamXM();
+    });
   });
 }
-
-
 
 /* ===== IN THÁNG XXM LINE2 ===== */
 
@@ -2655,6 +2748,7 @@ function openXM(){
 
     // 👉 mở trang
     showPage("xxmhv123");
+    loadSumYearWhenOpenXXM();    
     startPageTimeout("xxmhv123");
     // 👉 MẶC ĐỊNH HIỆN TỔNG HỢP THÁNG LINE 2
     showMonthLine("l2");
@@ -2675,6 +2769,66 @@ function showMonthLine(line){
   document.getElementById("xuatxmline2").style.display =
     line==="l2" ? "block" : "none";
 }
+
+  /* ============= LOAD SUM NĂM KHI OPENXM =========== */
+
+function loadSumYearWhenOpenXXM(){
+
+  const year = new Date().getFullYear(); // năm hiện tại
+  const fakeMonth = year + "-01";        // chỉ để backend tách year
+
+  /* ===== LINE 1 ===== */
+  fetch(XXM1_API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"sumMonthYearXXM1",
+      month: fakeMonth
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.ok){
+      sumYearXM1 = Number(res.sumYear) || 0;
+      capNhatSumNamXM();
+    }
+  });
+
+  /* ===== LINE 2 ===== */
+  fetch(XXM_API,{
+    method:"POST",
+    body:JSON.stringify({
+      action:"sumMonthYearXXM",
+      month: fakeMonth
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.ok){
+      sumYearXM2 = Number(res.sumYear) || 0;
+      capNhatSumNamXM();
+    }
+  });
+}
+
+/* =========== TÍNH SUM  XXM CẢ NĂM ========= */
+function capNhatSumNamXM(){
+  
+  const sumYearXM = sumYearXM1 + sumYearXM2;
+
+  // LINE 1
+  const elL1 = document.getElementById("sumYearXM_L1");
+  if(elL1){
+    elL1.innerText = sumYearXM.toLocaleString("vi-VN");
+  }
+
+  // LINE 2
+  const elL2 = document.getElementById("sumYearXM_L2");
+  if(elL2){
+    elL2.innerText = sumYearXM.toLocaleString("vi-VN");
+  }
+}
+
+
 
             /* ================CHẤM CÔNG ============== */
             /* ================CHẤM CÔNG ============== */
