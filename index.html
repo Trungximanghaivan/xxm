@@ -2387,7 +2387,8 @@ function loadMonthxxm(){
     })
   }).then(r=>r.json()).then(res=>{
     if(!res.ok) return;
-    // reset bảng
+
+    // ===== RESET BẢNG =====
     document.querySelectorAll("#tblMonthxxm tbody tr").forEach(tr=>{
       tr.innerHTML = `<th>${tr.querySelector("th").innerText}</th>`;
     });
@@ -2400,28 +2401,60 @@ function loadMonthxxm(){
       roiddht:[], roiddhv:[]
     };
 
+    // ===== ĐỔ DỮ LIỆU =====
     for(let d=1;d<=31;d++){
-      const r=res.data[d]||{};
+      const r = res.data[d] || {};
       Object.keys(map).forEach(k => map[k].push(Number(r[k]) || 0));
     }
 
+    // ===== GHI BẢNG =====
     Object.keys(map).forEach(k=>{
-      const tr=document.querySelector(`tr[data-row="${k}"]`);
-      let sum=0;
+      const tr = document.querySelector(`tr[data-row="${k}"]`);
+      let sum = 0;
 
       map[k].forEach(v=>{
-        sum+= v;
-
-         // 👉 HIỂN THỊ TỐI ĐA 2 CHỮ SỐ THẬP PHÂN
-     tr.innerHTML += `<td>${v ? v.toFixed(2) : ""}</td>`;
+        sum += v;
+        tr.innerHTML += `<td>${v ? v.toFixed(2) : ""}</td>`;
       });
 
-      // 👉 SUM: làm tròn 2 số thập phân
       tr.innerHTML += `<td><b>${sum.toFixed(2)}</b></td>`;
     });
-    // ===============================
-    // 🔥 LOAD SUM THÁNG + SUM NĂM
-    // ===============================
+
+    // ==================================
+    // 🔥 AUTO SUM NGAY TẠI ĐÂY (KHÔNG CẦN GỌI NGOÀI)
+    // ==================================
+    (function autoSum(){
+      const table = document.getElementById("tblMonthxxm");
+      const rows = table.querySelectorAll("tbody tr");
+
+      let tfoot = table.querySelector("tfoot");
+      if(!tfoot){
+        tfoot = document.createElement("tfoot");
+        table.appendChild(tfoot);
+      }
+
+      let html = `<tr><th>TỔNG NGÀY</th>`;
+      let totalAll = 0;
+
+      for(let col=1; col<=31; col++){
+        let sum = 0;
+
+        rows.forEach(tr=>{
+          const val = Number(tr.children[col]?.innerText) || 0;
+          sum += val;
+        });
+
+        totalAll += sum;
+        html += `<th>${sum ? sum.toFixed(2) : ""}</th>`;
+      }
+
+      html += `<th>${totalAll.toFixed(2)}</th></tr>`;
+      tfoot.innerHTML = html;
+    })();
+
+    // ==================================
+    // 🔥 SUM THÁNG + NĂM
+    // ==================================
     fetch(XXM_API,{
       method:"POST",
       body:JSON.stringify({
@@ -2440,8 +2473,8 @@ function loadMonthxxm(){
         Number(sum.sumYear).toLocaleString("vi-VN");
 
       sumYearXM2 = Number(sum.sumYear) || 0;
-      capNhatSumNamXM();
     });
+
   });
 }
 
@@ -2488,6 +2521,38 @@ function loadMonthxxm1(){
       // 👉 SUM: làm tròn 2 số thập phân
       tr.innerHTML += `<td><b>${sum.toFixed(2)}</b></td>`;
     });
+    // ==================================
+    // 🔥 AUTO SUM NGAY TẠI ĐÂY (KHÔNG CẦN GỌI NGOÀI)
+    // ==================================
+    (function autoSum(){
+      const table = document.getElementById("tblMonthxxm1");
+      const rows = table.querySelectorAll("tbody tr");
+
+      let tfoot = table.querySelector("tfoot");
+      if(!tfoot){
+        tfoot = document.createElement("tfoot");
+        table.appendChild(tfoot);
+      }
+
+      let html = `<tr><th>TỔNG NGÀY</th>`;
+      let totalAll = 0;
+
+      for(let col=1; col<=31; col++){
+        let sum = 0;
+
+        rows.forEach(tr=>{
+          const val = Number(tr.children[col]?.innerText) || 0;
+          sum += val;
+        });
+
+        totalAll += sum;
+        html += `<th>${sum ? sum.toFixed(2) : ""}</th>`;
+      }
+
+      html += `<th>${totalAll.toFixed(2)}</th></tr>`;
+      tfoot.innerHTML = html;
+    })();
+
     // ===============================
     // 🔥 LOAD SUM THÁNG + SUM NĂM
     // ===============================
